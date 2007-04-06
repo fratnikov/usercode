@@ -1,0 +1,17 @@
+# Here are quick instructions how to build and run AnalysisTemplate
+# Questions, complains, requests -> Fedor Ratnikov (ratnikov@fnal.gov)
+
+scramv1 project CMSSW CMSSW_1_3_0
+cd CMSSW_1_3_0/src
+cvs co UserCode/FedorRatnikov/HcalExamples/AnalysisTemplate
+ln -s UserCode/FedorRatnikov/HcalExamples ./
+scramv1 b
+eval `scramv1 runtime -csh`
+# customize HcalExamples/AnalysisTemplate/test/runAnalysisTemplate.cfg file:
+# # of events to be processed (-1 to process all events) - line:  untracked int32 maxEvents = 2
+# input file - line:  untracked vstring fileNames = {'file:/scratch/ratnikov/data/USC_000206.root'}
+# output data file - line:   untracked string fileName = "events.root"
+# output root file - line:   untracked string rootFile = "histograms.root"
+# mapping file as necessary - line   FileInPath file = "HcalExamples/AnalysisTemplate/data/hfplusmap.txt"
+
+cmsRun HcalExamples/AnalysisTemplate/test/runAnalysisTemplate.cfg

@@ -16,8 +16,8 @@ namespace {
 }
 
 AnalysisTemplate::AnalysisTemplate (const edm::ParameterSet& fConfiguration) {
-  mFile = 0;
-  //  mFile = TFile::Open (fConfiguration.getUntrackedParameter<string> ("rootFile", "AnalysisTemplate.root").c_str());
+  std::string histfile = fConfiguration.getUntrackedParameter<string> ("rootFile", "AnalysisTemplate.root");
+  mFile = new TFile (histfile.c_str());
 }
 
 AnalysisTemplate::~AnalysisTemplate () {
