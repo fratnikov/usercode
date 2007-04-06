@@ -1,0 +1,13 @@
+<flags SEAL_PLUGIN_NAME="HcalExamplesAnalysisTemplate">
+<use name=boost>
+<use name=root>
+<use name=FWCore/ParameterSet>
+<use name=DataFormats/HcalDigi>
+<use name=DataFormats/HcalRecHit>
+<use name=DataFormats/Common>
+<use name=FWCore/Framework>
+<export>
+ <lib name=HcalExamplesAnalysisTemplate>
+ <use name=boost>
+ <use name=FWCore/Framework>
+</export>
