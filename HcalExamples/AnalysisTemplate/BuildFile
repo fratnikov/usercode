@@ -5,6 +5,7 @@
 <use name=DataFormats/HcalDigi>
 <use name=DataFormats/HcalRecHit>
 <use name=DataFormats/Common>
+<use name=CalibFormats/HcalObjects>
 <use name=FWCore/Framework>
 <export>
  <lib name=HcalExamplesAnalysisTemplate>
