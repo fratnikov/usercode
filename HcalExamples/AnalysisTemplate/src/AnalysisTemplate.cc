@@ -15,19 +15,23 @@
 #include "FWCore/Framework/interface/ESHandle.h"
 \
 #include "TFile.h"
+#include "TH1F.h"
+#include "TH2F.h"
 
 using namespace std;
 
-namespace {
-  bool verbose = true;
-}
-
 AnalysisTemplate::AnalysisTemplate (const edm::ParameterSet& fConfiguration) {
+  mVerbose = fConfiguration.getUntrackedParameter<bool> ("verbose", false);
   std::string histfile = fConfiguration.getUntrackedParameter<string> ("rootFile", "AnalysisTemplate.root");
-  mFile = new TFile (histfile.c_str());
+  mFile = new TFile (histfile.c_str(), "RECREATE");
+  // book histograms
+  mAdcs = new TH1F ("adcs", "ADC", 128, 0, 128);
+  mCalbVsLinearized = new TH2F ("calibVsLinearized", "Calibrated fC vs linearized fC", 1000, 0, 100, 1000, 0, 100);
 }
 
 AnalysisTemplate::~AnalysisTemplate () {
+  delete mAdcs;
+  delete mCalbVsLinearized;
   delete mFile;
 }
 
@@ -41,7 +45,7 @@ void AnalysisTemplate::analyze(const edm::Event& fEvent, const edm::EventSetup& 
   edm::EventID eventId = fEvent.id();
   int runNumber = eventId.run ();
   int eventNumber = eventId.event ();
-  if (verbose) std::cout << "======================================================================" << std::endl
+  if (verbose()) std::cout << "======================================================================" << std::endl
 			 << "AnalysisTemplate-> run/event: " << runNumber << '/' << eventNumber << std::endl;
 
   // get HCAL digis (samples). Presume single instance per event
@@ -53,14 +57,14 @@ void AnalysisTemplate::analyze(const edm::Event& fEvent, const edm::EventSetup& 
   fEvent.getByType(hf_digi);
 
   // plot something for HF
-  if (verbose) std::cout << "AnalysisTemplate-> total HF digis: : " << hf_digi->size () << std::endl;
+  if (verbose()) std::cout << "AnalysisTemplate-> total HF digis: : " << hf_digi->size () << std::endl;
   for (unsigned ihit = 0; ihit < hf_digi->size (); ++ihit) {
     const HFDataFrame& frame = (*hf_digi)[ihit];
     HcalDetId detId = frame.id();
     int ieta = detId.ieta();
     int iphi = detId.iphi();
     int depth = detId.depth();
-    if (verbose) std::cout << "AnalysisTemplate->   HF digi # " << ihit  
+    if (verbose()) std::cout << "AnalysisTemplate->   HF digi # " << ihit  
 			   << ": cell eta/phi/depth: " << ieta << '/' << iphi << '/' << depth << std::endl;
     // get QIE calibrations for the cell
     const HcalQIECoder* coder = hcalCalibrations->getHcalCoder (detId);
@@ -72,7 +76,10 @@ void AnalysisTemplate::analyze(const edm::Event& fEvent, const edm::EventSetup& 
       double nominal_fC = detId.subdet () == HcalForward ? 2.6 *  linear_ADC : linear_ADC;
       // convert to fC using calibrations
       double calibrated_fC = coder->charge (*qieShape, adc, capid);
-      if (verbose) std::cout << "AnalysisTemplate->     HF sample # " << isample 
+      mAdcs->Fill (adc);
+      mCalbVsLinearized->Fill (nominal_fC, calibrated_fC);
+
+      if (verbose()) std::cout << "AnalysisTemplate->     HF sample # " << isample 
 			     << ", capid=" << capid 
 			     << ": ADC=" << adc 
 			     << ", linearized ADC=" << linear_ADC
@@ -96,4 +103,7 @@ void AnalysisTemplate::beginJob(const edm::EventSetup& fSetup) {
 
 void AnalysisTemplate::endJob(void)
 {
+  mAdcs->Write();
+  mCalbVsLinearized->Write();
+  mFile->Write();
 }

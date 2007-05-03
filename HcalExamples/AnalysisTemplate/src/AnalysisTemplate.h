@@ -2,6 +2,8 @@
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 
 class TFile;
+class TH1F;
+class TH2F;
 
 class AnalysisTemplate : public edm::EDAnalyzer {
  public:
@@ -16,6 +18,12 @@ class AnalysisTemplate : public edm::EDAnalyzer {
 
   // very end of the job
   virtual void endJob(void);
+
+  // be verbose
+  bool verbose () {return mVerbose;}
  private:
+  bool mVerbose;
   TFile* mFile;
+  TH1F* mAdcs;
+  TH2F* mCalbVsLinearized;
 };
