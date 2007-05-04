@@ -1,0 +1,43 @@
+	SETUP:
+	mkdir /home/h2hcal/HF_analysis/USERS/YOUR_USER_NAME
+	cd /home/h2hcal/HF_analysis/USERS/YOUR_USER_NAME
+	scramv1 project CMSSW CMSSW_1_3_0
+	cd CMSSW_1_3_0/src
+	cmscvsroot CMSSW
+	cvs login
+	cvs co UserCode/FedorRatnikov/HcalExamples/AnalysisTemplate
+	ln -s UserCode/FedorRatnikov/HcalExamples ./
+	scramv1 b
+	eval `scramv1 runtime -csh`
+	# customize HcalExamples/AnalysisTemplate/test/runAnalysisTemplate.cfg 
+	file:
+	# # of events to be processed (-1 to process all events) - line:  
+	untracked int32 maxEvents = 1000
+	# input file - line:  untracked vstring fileNames = 
+	{'file:/bigspool/usc/USC_000206.root'}
+	# output data file - line:   untracked string fileName = "events.root"
+	# output root file - line:   untracked string rootFile = "histograms.root"
+	# mapping file as necessary - line   FileInPath file = 
+	"HcalExamples/AnalysisTemplate/data/hfplusmap.txt"
+
+	RECONSTRUCTION AND ANALYSIS:
+	for reco: cmsRun /home/h2hcal/HF_analysis/RECO/CMSSW_1_3_0/src/reco.cfg
+			the output is written to /home/h2hcal/HF_analysis/RECO/CMSSW_1_3_0/src/recodata
+
+	for analysis: cmsRun /home/h2hcal/HF_analysis/USERS/YOUR_USER_NAME/CMSSW_1_3_0/src/HcalExamples/AnalysisTemplate/test/runAnalysisTemplate.cfg
+
+	CODE DESCRIPTION:
+        The access methods to C++ objects(digi,recohit,etc) can be 
+	found in the following urls for the CMSSW class definitions:
+	Event ID:
+	http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/Common/interface/EventID.h
+		(this is not valid for versions after CMSSW_1_5_0_pre1)
+	HCAL DB SERVICE:
+        http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/CalibFormats/HcalObjects/interface/
+	HCAL Detector ID:
+	http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/HcalDetId   
+	HCAL Digi:
+        http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/HcalDigi/
+	HCAL Rechit:
+        http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/DataFormats/HcalRecHit/	
+

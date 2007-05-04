@@ -25,5 +25,8 @@ class AnalysisTemplate : public edm::EDAnalyzer {
   bool mVerbose;
   TFile* mFile;
   TH1F* mAdcs;
+  TH1F* mrechits_ene;
+  TH1F* mrechits_time;
+  TH2F* mrechits;
   TH2F* mCalbVsLinearized;
 };
