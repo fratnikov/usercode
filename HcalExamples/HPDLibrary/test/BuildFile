@@ -1,0 +1,6 @@
+<Flags CXXFLAGS="-g -O0">
+<use name=HcalExamples/HPDLibrary>
+
+<bin file=writeHPDLibrary.cc></bin>
+<bin file=readHPDLibrary.cc></bin>
+

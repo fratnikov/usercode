@@ -1,0 +1,9 @@
+<Flags CXXFLAGS="-g -O0">
+<use name=root>
+<use name=rootcore>
+<use name=DataFormats/HcalDetId>
+<export>
+  <lib name=HcalExamplesHPDLibrary>
+  <use name=rootcore>
+  <use name=DataFormats/HcalDetId>
+</export>
