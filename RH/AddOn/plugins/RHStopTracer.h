@@ -18,11 +18,15 @@ class RHStopTracer :  public SimWatcher,
 		      public Observer<const BeginOfTrack *>,
 		      public Observer<const EndOfTrack *>
 {
-public:
-  RHStopTracer(edm::ParameterSet const & p) {}
+ public:
+  RHStopTracer(edm::ParameterSet const & p);
   ~RHStopTracer() {}
   void update(const BeginOfRun *);
   void update(const BeginOfEvent *);
   void update(const BeginOfTrack *);
   void update(const EndOfTrack *);
+ private:
+  bool mDebug;
+  std::ofstream mStream;
+  double mTraceEnergy;
 };
