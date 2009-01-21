@@ -27,9 +27,9 @@ void RHStopTracer::update (const BeginOfTrack * fTrack) {
   const G4Track* track = (*fTrack)();
   if ((track->GetMomentum().mag()> mTraceEnergy) || track->GetDefinition()->GetParticleName().find ("~g") != std::string::npos) {
     if (mDebug)
-    std::cout << "RHStopTracer::update-> new track: ID/Name/Parent: " 
+    std::cout << "RHStopTracer::update-> new track: ID/Name/mass/Parent: " 
 	      << track->GetTrackID() << '/' << track->GetDefinition()->GetParticleName() << '/' 
-	      << track->GetParentID()
+	      << track->GetDefinition()->GetPDGMass() << '/' << track->GetParentID()
 	      << std::endl
 	      << " position X/Y/Z: " << track->GetPosition().x() << '/' 
 	      << track->GetPosition().y() << '/' <<  track->GetPosition().z()
@@ -48,8 +48,9 @@ void RHStopTracer::update (const EndOfTrack * fTrack) {
   const G4Track* track = (*fTrack)();
   if ((track->GetMomentum().mag()> mTraceEnergy) || track->GetDefinition()->GetParticleName().find ("~g") != std::string::npos) {
     if (mDebug)
-    std::cout << "RHStopTracer::update-> stop track: ID/Name/Parent: " 
-	      << track->GetTrackID() << '/' << track->GetDefinition()->GetParticleName() << '/' << track->GetParentID()
+    std::cout << "RHStopTracer::update-> stop track: ID/Name/mass/Parent: " 
+	      << track->GetTrackID() << '/' << track->GetDefinition()->GetParticleName() << '/' 
+	      << track->GetDefinition()->GetPDGMass() << '/' << track->GetParentID()
 	      << std::endl
 	      << " position X/Y/Z: " << track->GetPosition().x() << '/' 
 	      << track->GetPosition().y() << '/' <<  track->GetPosition().z()
