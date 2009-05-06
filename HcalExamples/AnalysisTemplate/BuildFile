@@ -1,10 +1,14 @@
-<flags SEAL_PLUGIN_NAME="HcalExamplesAnalysisTemplate">
+<flags EDM_PLUGIN=1>
 <use name=boost>
 <use name=root>
 <use name=FWCore/ParameterSet>
+<use name=DataFormats/JetReco>
+<use name=DataFormats/METReco>
+<use name=DataFormats/MuonReco>
+<use name=PhysicsTools/UtilAlgos>
+<use name=DataFormats/Common>
 <use name=DataFormats/HcalDigi>
 <use name=DataFormats/HcalRecHit>
-<use name=DataFormats/Common>
 <use name=CalibFormats/HcalObjects>
 <use name=FWCore/Framework>
 <export>

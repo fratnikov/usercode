@@ -57,9 +57,11 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/Common/interface/EventID.h"
+#include "DataFormats/Provenance/interface/EventID.h"
 #include "FWCore/Framework/interface/EventSetup.h"
+#include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/ESHandle.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
 
 #include "TFile.h"
 #include "TH1F.h"
