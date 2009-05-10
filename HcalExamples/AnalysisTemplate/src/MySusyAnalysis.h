@@ -37,6 +37,18 @@ class MySusyAnalysis : public edm::EDAnalyzer {
 
   TH1F* mNJetsGood;
 
+  // electrons
+  TH1F* mElectronGood;
+  TH1F* mElectronEt;
+  TH1F* mElectronEta;
+  TH1F* mElectronHcalIsoRel;
+  TH1F* mElectronEcalIsoRel;
+  TH1F* mElectronTrackIsoRel;
+  TH1F* mElectronTotalIsoRel;
+  TH1F* mElectronD0;
+  TH1F* mNElectronsGood;
+
+
   // muons
   TH1F* mMuonGood;
   TH1F* mMuonPt;
@@ -54,4 +66,6 @@ class MySusyAnalysis : public edm::EDAnalyzer {
   TH1F* mMuonEcalE;
 
   TH1F* mNMuonsGood;
+
+  TH1F* mStepByStep;
 };

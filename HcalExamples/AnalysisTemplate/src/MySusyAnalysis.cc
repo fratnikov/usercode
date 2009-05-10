@@ -22,6 +22,7 @@
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 
 #include "DataFormats/BeamSpot/interface/BeamSpot.h"
@@ -40,7 +41,13 @@ namespace {
   const double MU_HCAL_E = 6;
   const double MU_ECAL_E = 4;
 
-  const double JET_PT = 30;
+  const double ELE_R_ISO = 0.3;
+  const double ELE_ET = 20;
+  const double ELE_ETA = 2.5;
+  const double ELE_RELIS = 0.1;
+  const double ELE_D0 = 0.2;
+
+  const double JET_PT = 50;
   const double JET_ETA = 2.4;
   const double JET_HADFRAC = 0.1;
 
@@ -63,6 +70,16 @@ MySusyAnalysis::MySusyAnalysis (const edm::ParameterSet& fConfiguration) {
   mJetHadFraction = fileService->make<TH1F> ("mJetHadFraction","JetHadFraction",102, -0.01, 1.01 );
   mNJetsGood = fileService->make<TH1F> ("mNJetsGood","NJetsGood", 25, 0, 25 );
 
+  mElectronGood = fileService->make<TH1F> ("mElectronGood","ElectronGood",2, -0.5, 1.5);
+  mElectronEt = fileService->make<TH1F> ("mElectronEt", "ElectronEt",250, 0, 500);
+  mElectronEta = fileService->make<TH1F> ("mElectronEta", "ElectronEta",100, -5, 5);
+  mElectronHcalIsoRel = fileService->make<TH1F> ("mElectronHcalIsoRel", "ElectronHcalIsoRel",100, 0, 2.5);
+  mElectronEcalIsoRel = fileService->make<TH1F> ("mElectronEcalIsoRel", "ElectronEcalIsoRel",100, 0, 2.5);
+  mElectronTrackIsoRel = fileService->make<TH1F> ("mElectronTrackIsoRel", "ElectronTrackIsoRel",100, 0, 2.5);
+  mElectronTotalIsoRel = fileService->make<TH1F> ("mElectronTotalIsoRel", "ElectronTotalIsoRel",100, 0, 2.5);
+  mElectronD0 = fileService->make<TH1F> ("mElectronD0", "ElectronD0",500, 0, 1.);
+  mNElectronsGood = fileService->make<TH1F> ("mNElectronsGood", "NElectronsGood",10, 0, 10);
+
 
   mMuonGood = fileService->make<TH1F> ("mMuonGood","MuonGood",2, -0.5, 1.5);
   mMuonPt = fileService->make<TH1F> ("mMuonPt", "MuonPt",250, 0, 500);
@@ -80,6 +97,8 @@ MySusyAnalysis::MySusyAnalysis (const edm::ParameterSet& fConfiguration) {
   mMuonEcalE = fileService->make<TH1F> ("mMuonEcalE", "MuonEcalE",100, 0, 20);
 
   mNMuonsGood = fileService->make<TH1F> ("mNMuonsGood", "NMuonsGood",10, 0, 10);
+
+  mStepByStep = fileService->make<TH1F> ("mStepByStep", "StepByStep", 20, 0.5, 20.5);
 }
 
 
@@ -151,7 +170,8 @@ void MySusyAnalysis::analyze(const edm::Event& fEvent, const edm::EventSetup& fS
   for (unsigned iMuon = 0; iMuon < muons->size(); iMuon++) {
     const pat::Muon& muon = (*muons)[iMuon];
     if (TRACE) std::cout << "===> muon #" << iMuon << std::endl;
-    
+      TH1F* mStepByStepRel;
+
     int good = muon.isGood(reco::Muon::GlobalMuonPromptTight) ? 1 : 0;
     //      int good = muon.isGlobalMuon () ? 1 : 0;
     mMuonGood->Fill (good);
@@ -204,7 +224,71 @@ void MySusyAnalysis::analyze(const edm::Event& fEvent, const edm::EventSetup& fS
   }
   mNMuonsGood->Fill (nMuons);
 
-  if (goodMET && nJets >= 1 && nMuons >= 1) mFinalMet->Fill (met); // mu+jet+MET
+  if (TRACE) std::cout << "Processing electrons..." << std::endl;
+  // electrons
+  int nElectrons = 0;
+  edm::Handle<pat::ElectronCollection> electrons;
+  fEvent.getByLabel("selectedLayer1Electrons", electrons);
+  if (!electrons.isValid()) {
+    std::cout << "Can't find pat::ElectronCollection selectedLayer1Electrons" << std::endl;
+    return;
+  }
+  for (unsigned iElectron = 0; iElectron < electrons->size(); iElectron++) {
+    const pat::Electron& electron = (*electrons)[iElectron];
+    if (TRACE) std::cout << "===> electron #" << iElectron << std::endl;
+    
+    int good = electron.electronID("eidRobustTight") ? 1 : 0;
+    mElectronGood->Fill (good);
+    if (!good) continue;
+    double et = electron.et();
+    mElectronEt->Fill (et);
+    if (TRACE) std::cout << "electron et " << et << std::endl;
+    if (et < ELE_ET) continue;
+    double eta = electron.eta();
+    double pt = electron.pt();
+    mElectronEta->Fill (eta);
+    if (TRACE) std::cout << "electron eta " << fabs(eta) << std::endl;
+    if (fabs(eta) > ELE_ETA) continue;
+    double hcalIso = electron.hcalIsoDeposit()->depositWithin (ELE_R_ISO) / et;
+    mElectronHcalIsoRel->Fill (hcalIso);
+    double ecalIso = (electron.ecalIsoDeposit()->depositWithin (ELE_R_ISO) - 
+		      electron.caloEnergy()) / et;
+    mElectronEcalIsoRel->Fill (ecalIso);
+//     double trackIso = (electron.trackerIsoDeposit()->depositWithin (ELE_R_ISO) - 
+// 		       electron.gsfTrack()->pt()) / pt;
+    double trackIso = 0;
+    mElectronTrackIsoRel->Fill (trackIso);
+    double relIso = hcalIso + ecalIso + trackIso;
+    mElectronTotalIsoRel->Fill (relIso);
+    if (TRACE) std::cout << "electron h/e/tra REL ISO" 
+			 << hcalIso << '/' << ecalIso << '/' << trackIso << ' ' << relIso << std::endl;
+    if (relIso > ELE_RELIS) continue;
+    double d0 = fabs(electron.gsfTrack()->dxy (beamSpot->position()));
+    mElectronD0->Fill (d0);
+    if (TRACE) std::cout << "electron d0" << d0 << std::endl;
+    if (d0 > ELE_D0) continue;
+    ++nElectrons;
+  }
+  mNElectronsGood->Fill (nElectrons);
+
+  if (TRACE) std::cout << "MET/muons/jets/electrons: " << goodMET << '/' 
+		       << nMuons << '/' << nJets << '/' << nElectrons << std::endl;
+  // fill summary
+  mStepByStep->Fill (1);
+  if (nMuons == 1) {
+    mStepByStep->Fill (2);
+    if (nElectrons == 0) {
+      mStepByStep->Fill (3);
+      if (nJets >= 3) {
+	mStepByStep->Fill (4);
+	if (goodMET) {
+	  mStepByStep->Fill (5);
+	  mFinalMet->Fill (met); // mu+3jet+MET_noe
+	  if (TRACE) std::cout << "===> Event is accepted <===" << std::endl;
+	}
+      }
+    }
+  }
 }
 
 void MySusyAnalysis::beginJob(const edm::EventSetup& fSetup) {
