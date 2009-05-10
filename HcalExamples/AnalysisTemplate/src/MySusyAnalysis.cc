@@ -73,10 +73,10 @@ MySusyAnalysis::MySusyAnalysis (const edm::ParameterSet& fConfiguration) {
   mElectronGood = fileService->make<TH1F> ("mElectronGood","ElectronGood",2, -0.5, 1.5);
   mElectronEt = fileService->make<TH1F> ("mElectronEt", "ElectronEt",250, 0, 500);
   mElectronEta = fileService->make<TH1F> ("mElectronEta", "ElectronEta",100, -5, 5);
-  mElectronHcalIsoRel = fileService->make<TH1F> ("mElectronHcalIsoRel", "ElectronHcalIsoRel",100, 0, 2.5);
-  mElectronEcalIsoRel = fileService->make<TH1F> ("mElectronEcalIsoRel", "ElectronEcalIsoRel",100, 0, 2.5);
-  mElectronTrackIsoRel = fileService->make<TH1F> ("mElectronTrackIsoRel", "ElectronTrackIsoRel",100, 0, 2.5);
-  mElectronTotalIsoRel = fileService->make<TH1F> ("mElectronTotalIsoRel", "ElectronTotalIsoRel",100, 0, 2.5);
+  mElectronHcalIsoRel = fileService->make<TH1F> ("mElectronHcalIsoRel", "ElectronHcalIsoRel",100, -0.1, 2.4);
+  mElectronEcalIsoRel = fileService->make<TH1F> ("mElectronEcalIsoRel", "ElectronEcalIsoRel",100, -0.1, 2.4);
+  mElectronTrackIsoRel = fileService->make<TH1F> ("mElectronTrackIsoRel", "ElectronTrackIsoRel",100, -0.1, 2.4);
+  mElectronTotalIsoRel = fileService->make<TH1F> ("mElectronTotalIsoRel", "ElectronTotalIsoRel",100, -0.1, 2.4);
   mElectronD0 = fileService->make<TH1F> ("mElectronD0", "ElectronD0",500, 0, 1.);
   mNElectronsGood = fileService->make<TH1F> ("mNElectronsGood", "NElectronsGood",10, 0, 10);
 
@@ -256,7 +256,7 @@ void MySusyAnalysis::analyze(const edm::Event& fEvent, const edm::EventSetup& fS
     mElectronEcalIsoRel->Fill (ecalIso);
 //     double trackIso = (electron.trackerIsoDeposit()->depositWithin (ELE_R_ISO) - 
 // 		       electron.gsfTrack()->pt()) / pt;
-    double trackIso = 0;
+    double trackIso = electron.trackIso () / pt;
     mElectronTrackIsoRel->Fill (trackIso);
     double relIso = hcalIso + ecalIso + trackIso;
     mElectronTotalIsoRel->Fill (relIso);
