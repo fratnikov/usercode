@@ -2,11 +2,12 @@
  *
  * \author Fedor Ratnikov (inpired by FWCore/Framework/test/stubs/ToyModules.cc)
  *
- * \version $Id: $
+ * \version $Id: DoubleValueProducer.cc,v 1.1 2009/02/09 17:45:47 fedor Exp $
  *
  */
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/Framework/interface/Event.h"
 
 class DoubleValueProducer : public edm::EDProducer {
  public:
