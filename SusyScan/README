@@ -1,0 +1,7 @@
+Extra stuff for SUSY parameters scan.
+
+How to check out the packages :
+cvs co -d SusyScan/AddOn UserCode/FedorRatnikov/SusyScan/AddOn
+
+scram b SusyScan/AddOn
+
